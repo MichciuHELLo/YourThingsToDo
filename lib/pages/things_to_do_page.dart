@@ -42,13 +42,10 @@ class _ThingsToDoPageState extends State<ThingsToDoPage> {
     // }
     // db.toDoList.clear();
     // print("length: " + db.toDoList.length.toString());
-    // db.toDoList.add(Task("Zablokowac guzik 'save' gdy jest 0 znakow w textFild", false, false, null));
-    // db.toDoList.add(Task("Dodac drzewa taskow!", true, false, null));
-    // db.toDoList.add(Task("Dodac ustawienia globane", false, false, [SubTask("Zmiana jezyka", false), SubTask("Zmiana kolorow aplikacji", false)]));
-    // db.toDoList.add(Task("Powiadomienia przypominajace o wykonaniu taska", false, false, [SubTask("Przychodzą powiadomienia", false)]));
-    // db.toDoList.add(Task("Informacja o bledzie duplikacji taska przy taorzeniu nowego i edycji starego taska", false, false, [SubTask("Przy tworzeniu nowego taska", false), SubTask("Przy edytowaniu starego taska", false)]));
-    // db.toDoList.add(Task("Dodac opcje zaawansowane podczas tworzenia nowego taska i edycji starego", false, false, [SubTask("Przy tworzeniu nowego taska", false), SubTask("Przy edytowaniu starego taska", false)]));
-    // db.toDoList.add(Task("test main", false, true, [SubTask("test1", false), SubTask("test2", true)]));
+    // db.toDoList.add(Task("Błąd podczas edycji nazwy głównej taska. Valid index 0. Błąd się pojawia tylko gdy task ma subtask.", false, false, null, AlertData(1,1,1,1,1,1,'Never')));
+    // db.toDoList.add(Task("Poprawić widok dodawania taska. Widok jest brzydki i źle dopasowany do ekranu.", false, false, null, AlertData(1,1,1,1,1,1,'Never')));
+    // db.toDoList.add(Task("Wprowadzić przypomienia zadania na podstawie dat.", false, false, [SubTask("Przychodzą powiadomienia", false)], AlertData(1,1,1,1,1,1,'Never')));
+    // db.toDoList.add(Task("Ustawić ikone aplikacji", false, false, null, AlertData(1,1,1,1,1,1,'Never')));
     // db.updateDataBase();
     // print("length: " + db.toDoList.length.toString());
     // for(int i=0; i<db.toDoList.length; i++) {
@@ -57,8 +54,6 @@ class _ThingsToDoPageState extends State<ThingsToDoPage> {
     // TODO to delete
 
     db.loadData();
-    db.toDoList.clear();
-    db.updateDataBase();
 
     if (_myBox.get("TODOLIST") == null) {
       db.createInitialData();
