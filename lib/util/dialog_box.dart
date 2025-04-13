@@ -52,7 +52,7 @@ class _DialogBoxState extends State<DialogBox> {
   bool alarmDateSettings = false;
   bool alarmHourSettings = false;
   int subTaskCount = 0;
-  double sizedBoxHeight = 180;
+  double mainSizedBoxHeight = 200;
   double subTaskTextFormHeight = 64.3;
   double subTaskSizedBoxHeight = 0;
   List<int> controllersIndexToRemove = [];
@@ -177,19 +177,26 @@ class _DialogBoxState extends State<DialogBox> {
       double newTaskMenuHeight = 0;
       if (advancedSettings) {
         if (subTaskCount > 0) {
-          newTaskMenuHeight = (280 - subTaskTextFormHeight) +
+          // newTaskMenuHeight = (321 - subTaskTextFormHeight) +
+          newTaskMenuHeight = (324.3 - subTaskTextFormHeight) +
               subTaskCount * subTaskTextFormHeight;
         } else {
-          newTaskMenuHeight = 230;
+          newTaskMenuHeight = 260;
         }
 
-        if (newTaskMenuHeight > 453) {
-          sizedBoxHeight = 453;
+        if (newTaskMenuHeight > 500) {
+          mainSizedBoxHeight = 500;
         } else {
-          sizedBoxHeight = newTaskMenuHeight;
+          mainSizedBoxHeight = newTaskMenuHeight;
         }
       } else {
-        sizedBoxHeight = 180;
+        mainSizedBoxHeight = 200;
+      }
+      if (alarmDateSettings) {
+        mainSizedBoxHeight += 302;
+      }
+      if (alarmDateSettings && !advancedSettings) {
+        mainSizedBoxHeight -= 302;
       }
     });
   }
@@ -201,17 +208,42 @@ class _DialogBoxState extends State<DialogBox> {
     _pickedYear = DateTime.now().year;
 
     setState(() {
-      alarmDateSettings = !alarmDateSettings;
+      if (alarmDateSettings) {
+        alarmDateSettings = !alarmDateSettings;
+        mainSizedBoxHeight -= 302;
+      } else {
+        alarmDateSettings = !alarmDateSettings;
+        mainSizedBoxHeight += 302;
+      }
     });
   }
 
-  void alarmHourSettingsCheckBoxChanged() {
+  void alarmHourSettingsCheckBoxChanged() { // TODO delete - no usage
 
     _pickedHour = DateTime.now().hour;
     _pickedMinute = DateTime.now().minute;
 
     setState(() {
       alarmHourSettings = !alarmHourSettings;
+    });
+  }
+
+  void setSubTaskSizedBoxHeight(int subTaskCount) {
+    setState(() {
+      double newSubtaskMenuHeight = subTaskTextFormHeight * subTaskCount;
+      if (newSubtaskMenuHeight > 225) {
+        subTaskSizedBoxHeight = 225;
+      } else {
+        subTaskSizedBoxHeight = newSubtaskMenuHeight;
+      }
+
+      mainSizedBoxHeight += newSubtaskMenuHeight;
+      if (mainSizedBoxHeight > 500 && !alarmDateSettings) {
+        mainSizedBoxHeight = 500;
+      }
+      if (mainSizedBoxHeight > 820 && alarmDateSettings) {
+        mainSizedBoxHeight = 820;
+      }
     });
   }
 
@@ -226,29 +258,12 @@ class _DialogBoxState extends State<DialogBox> {
         subTaskSizedBoxHeight = newSubtaskMenuHeight;
       }
 
-      sizedBoxHeight += subTaskTextFormHeight;
-      if (sizedBoxHeight > 453) {
-        sizedBoxHeight = 453;
-      } else {
-        sizedBoxHeight = sizedBoxHeight;
+      mainSizedBoxHeight += subTaskTextFormHeight;
+      if (mainSizedBoxHeight > 500 && !alarmDateSettings) {
+        mainSizedBoxHeight = 500;
       }
-    });
-  }
-
-  void setSubTaskSizedBoxHeight(int subTaskCount) {
-    setState(() {
-      double newSubtaskMenuHeight = subTaskTextFormHeight * subTaskCount;
-      if (newSubtaskMenuHeight > 225) {
-        subTaskSizedBoxHeight = 225;
-      } else {
-        subTaskSizedBoxHeight = newSubtaskMenuHeight;
-      }
-
-      sizedBoxHeight += newSubtaskMenuHeight;
-      if (sizedBoxHeight > 453) {
-        sizedBoxHeight = 453;
-      } else {
-        sizedBoxHeight = sizedBoxHeight;
+      if (mainSizedBoxHeight > 820 && alarmDateSettings) {
+        mainSizedBoxHeight = 820;
       }
     });
   }
@@ -277,7 +292,7 @@ class _DialogBoxState extends State<DialogBox> {
                   }
                 });
 
-                if (widget.controllers.length < 4) {
+                if (subTaskCount + 1 < 4) {
                   // size down DialogBox
                   double newSubtaskMenuHeight =
                       subTaskTextFormHeight * subTaskCount;
@@ -286,7 +301,10 @@ class _DialogBoxState extends State<DialogBox> {
                   } else {
                     subTaskSizedBoxHeight = newSubtaskMenuHeight;
                   }
-                  sizedBoxHeight -= subTaskTextFormHeight - 13;
+                  mainSizedBoxHeight -= subTaskTextFormHeight;
+                } else if (subTaskCount + 1 == 4) {
+                  subTaskSizedBoxHeight = subTaskTextFormHeight * subTaskCount;
+                  mainSizedBoxHeight -= 47.1;
                 }
                 db.updateDataBase();
 
@@ -313,407 +331,407 @@ class _DialogBoxState extends State<DialogBox> {
     return AlertDialog(
       // backgroundColor: Colors.purple,
       backgroundColor: globals.appColorMain,
-      content: SizedBox(
-        // height: sizedBoxHeight,
-        height: 800, // TODO do smth about it
-        // height: 433,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Visibility(
-              visible: taskExists,
-              child: Text(
-                taskMultiplicationAlert,
+      content: SingleChildScrollView(
+        child: SizedBox(
+          height: mainSizedBoxHeight,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Visibility(
+                visible: taskExists,
+                child: Text(
+                  taskMultiplicationAlert,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      // color: Colors.red[200]
+                      color: globals.appColorAlert
+                  ),
+                ),
+              ),
+              TextFormField(
+                controller: widget.controller,
                 style: TextStyle(
+                    color: globals.appColorText,
+                    fontWeight: FontWeight.bold
+                ),
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                  hintText: widget.hintText,
+                  hintStyle: TextStyle(
+                      color: globals.appColorText
+                  ),
+                ),
+              ),
+        
+              // TODO create notifications on dates
+              // Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+              //   Checkbox(
+              //     activeColor: globals.appColorCheckbox,
+              //     checkColor: globals.appColorCheck,
+              //     value: alarmSettings,
+              //     onChanged: (value) => alarmSettingsCheckBoxChanged(),
+              //   ),
+              //   Text(
+              //     'Alarm Settings',
+              //     style: TextStyle(
+              //       fontWeight: FontWeight.bold,
+              //       color: globals.appColorText,
+              //     ),
+              //   ),
+              // ]),
+              // Visibility(
+              //     visible: alarmSettings,
+              //     child: Column(
+              //
+              //       // TODO option to point at what date start the reminder
+              //
+              //       // TODO option how often to reminder - every: hour, day, week, month, year - at what hour
+              //
+              //       // TODO notifications works
+              //
+              //     )
+              // ),
+        
+              Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                Checkbox(
+                  activeColor: globals.appColorCheckbox,
+                  checkColor: globals.appColorCheck,
+                  value: advancedSettings,
+                  onChanged: (value) => advancedSettingsCheckBoxChanged(),
+                ),
+                Text(
+                  extraSettings,
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    // color: Colors.red[200]
-                    color: globals.appColorAlert
+                    color: globals.appColorText,
+                  ),
                 ),
-              ),
-            ),
-            TextFormField(
-              controller: widget.controller,
-              style: TextStyle(
-                  color: globals.appColorText,
-                  fontWeight: FontWeight.bold
-              ),
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10.0))),
-                hintText: widget.hintText,
-                hintStyle: TextStyle(
-                    color: globals.appColorText
-                ),
-              ),
-            ),
-
-            // TODO create notifications on dates
-            // Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-            //   Checkbox(
-            //     activeColor: globals.appColorCheckbox,
-            //     checkColor: globals.appColorCheck,
-            //     value: alarmSettings,
-            //     onChanged: (value) => alarmSettingsCheckBoxChanged(),
-            //   ),
-            //   Text(
-            //     'Alarm Settings',
-            //     style: TextStyle(
-            //       fontWeight: FontWeight.bold,
-            //       color: globals.appColorText,
-            //     ),
-            //   ),
-            // ]),
-            // Visibility(
-            //     visible: alarmSettings,
-            //     child: Column(
-            //
-            //       // TODO option to point at what date start the reminder
-            //
-            //       // TODO option how often to reminder - every: hour, day, week, month, year - at what hour
-            //
-            //       // TODO notifications works
-            //
-            //     )
-            // ),
-
-            Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-              Checkbox(
-                activeColor: globals.appColorCheckbox,
-                checkColor: globals.appColorCheck,
-                value: advancedSettings,
-                onChanged: (value) => advancedSettingsCheckBoxChanged(),
-              ),
-              Text(
-                extraSettings,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: globals.appColorText,
-                ),
-              ),
-            ]),
-            Visibility(
-                visible: advancedSettings,
-                child: Column(
-                  children: [
-
-                    // TODO create notifications on dates
-
-                    // TODO option to point at what date start the reminder
-                    Row(
-                      children: [
-                        Text(
-                          alarmStartDate,
-                          style: const TextStyle(fontWeight: FontWeight.bold)
-                        ),
-                        Checkbox(
-                            value: alarmDateSettings,
-                            onChanged: (value) => alarmDateSettingsCheckBoxChanged()
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Visibility(
-                            visible: alarmDateSettings,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Column(
-                                  children: [
-                                    Text(alarmDay, style: TextStyle(fontWeight: FontWeight.bold)),
-                                    NumberPicker(
-                                      minValue: 1,
-                                      maxValue: DateTime(DateTime.now().year, _pickedMonth + 1, 0).day,
-                                      value: _pickedDay > DateTime(DateTime.now().year, _pickedMonth + 1, 0).day ? DateTime(DateTime.now().year, _pickedMonth + 1, 0).day : _pickedDay,
-                                      itemHeight: 24,
-                                      itemWidth: 80,
-                                      onChanged: (value) => setState(() => _pickedDay = value),
-                                      selectedTextStyle: const TextStyle(
-                                          color: Colors.green,
-                                          fontSize: 20
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Column(
-                                  children: [
-                                    Text(alarmMonth, style: TextStyle(fontWeight: FontWeight.bold)),
-                                    NumberPicker(
-                                      minValue: 1,
-                                      maxValue: 12,
-                                      value: _pickedMonth,
-                                      itemHeight: 24,
-                                      itemWidth: 80,
-                                      onChanged: (value) => setState(() => _pickedMonth = value),
-                                      selectedTextStyle: const TextStyle(
-                                          color: Colors.green,
-                                          fontSize: 20
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Column(
-                                  children: [
-                                    Text(alarmYear, style: TextStyle(fontWeight: FontWeight.bold)),
-                                    NumberPicker(
-                                      minValue: 1,
-                                      maxValue: 4000,
-                                      value: _pickedYear,
-                                      itemHeight: 24,
-                                      itemWidth: 80,
-                                      onChanged: (value) => setState(() => _pickedYear = value),
-                                      selectedTextStyle: const TextStyle(
-                                          color: Colors.green,
-                                          fontSize: 20
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                        ),
-                        Visibility(
-                            visible: alarmDateSettings,
-                            child: Column(
-                              children: [
-                                const SizedBox(height: 25),
-                                Text(
-                                  alarmStartHour,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16
-                                  ),
-                                ),
-                                const SizedBox(height: 5),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Column(
-                                      children: [
-                                        Text(alarmHour, style: TextStyle(fontWeight: FontWeight.bold),),
-                                        NumberPicker(
-                                          minValue: 01,
-                                          maxValue: 24,
-                                          value: _pickedHour,
-                                          itemHeight: 24,
-                                          itemWidth: 80,
-                                          onChanged: (value) => setState(() => _pickedHour = value),
-                                          selectedTextStyle: const TextStyle(
-                                              color: Colors.green,
-                                              fontSize: 20
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        Text(alarmMinute, style: const TextStyle(fontWeight: FontWeight.bold),),
-                                        NumberPicker(
-                                          minValue: 00,
-                                          maxValue: 59,
-                                          value: _pickedMinute,
-                                          itemHeight: 24,
-                                          itemWidth: 80,
-                                          onChanged: (value) => setState(() => _pickedMinute = value),
-                                          selectedTextStyle: const TextStyle(
-                                              color: Colors.green,
-                                              fontSize: 20
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                // TODO option how often to reminder - every: hour, day, week, month, year - at what hour
-                                const SizedBox(height: 25),
-                                Row(
-                                  children: [
-                                    Text(alarmRepeatEvery,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16
-                                      ),
-                                    ),
-                                    const SizedBox(width: 10,),
-                                    Visibility(
-                                      visible: _dropdownValue != 'Nigdy' && _dropdownValue != 'Never' ? true : false, // TODO repair
-                                      child: NumberPicker(
+              ]),
+              Visibility(
+                  visible: advancedSettings,
+                  child: Column(
+                    children: [
+        
+                      // TODO create notifications on dates
+        
+                      // TODO option to point at what date start the reminder
+                      Row(
+                        children: [
+                          Text(
+                            alarmStartDate,
+                            style: const TextStyle(fontWeight: FontWeight.bold)
+                          ),
+                          Checkbox(
+                              value: alarmDateSettings,
+                              onChanged: (value) => alarmDateSettingsCheckBoxChanged()
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Visibility(
+                              visible: alarmDateSettings,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Column(
+                                    children: [
+                                      Text(alarmDay, style: TextStyle(fontWeight: FontWeight.bold)),
+                                      NumberPicker(
                                         minValue: 1,
-                                        maxValue: 999,
-                                        value: _pickedEvery,
+                                        maxValue: DateTime(DateTime.now().year, _pickedMonth + 1, 0).day,
+                                        value: _pickedDay > DateTime(DateTime.now().year, _pickedMonth + 1, 0).day ? DateTime(DateTime.now().year, _pickedMonth + 1, 0).day : _pickedDay,
                                         itemHeight: 24,
-                                        itemWidth: 35,
-                                        onChanged: (value) => setState(() => _pickedEvery = value),
+                                        itemWidth: 80,
+                                        onChanged: (value) => setState(() => _pickedDay = value),
                                         selectedTextStyle: const TextStyle(
                                             color: Colors.green,
                                             fontSize: 20
                                         ),
                                       ),
-                                    ),
-                                    const SizedBox(width: 10,),
-                                    DropdownButton<String> (
-                                      dropdownColor: globals.appColorSub,
-                                      value: _dropdownValue,
-                                      onChanged: (String? newValue) {
-                                        setState(() {
-                                          _dropdownValue = newValue!;
-                                        });
-                                      },
-                                      items: [
-                                        DropdownMenuItem(
-                                            value: 'Never',
-                                            child: Text(alarmNever)
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text(alarmMonth, style: TextStyle(fontWeight: FontWeight.bold)),
+                                      NumberPicker(
+                                        minValue: 1,
+                                        maxValue: 12,
+                                        value: _pickedMonth,
+                                        itemHeight: 24,
+                                        itemWidth: 80,
+                                        onChanged: (value) => setState(() => _pickedMonth = value),
+                                        selectedTextStyle: const TextStyle(
+                                            color: Colors.green,
+                                            fontSize: 20
                                         ),
-                                        DropdownMenuItem(
-                                            value: 'Everyday',
-                                            child: Text(alarmDay)
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text(alarmYear, style: TextStyle(fontWeight: FontWeight.bold)),
+                                      NumberPicker(
+                                        minValue: 1,
+                                        maxValue: 4000,
+                                        value: _pickedYear,
+                                        itemHeight: 24,
+                                        itemWidth: 80,
+                                        onChanged: (value) => setState(() => _pickedYear = value),
+                                        selectedTextStyle: const TextStyle(
+                                            color: Colors.green,
+                                            fontSize: 20
                                         ),
-                                        DropdownMenuItem(
-                                            value: 'Everyweek',
-                                            child: Text(alarmWeek)
-                                        ),
-                                        DropdownMenuItem(
-                                            value: 'Everyyear',
-                                            child: Text(alarmYear)
-                                        ),
-                                      ],
-                                    )
-                                  ]
-                                ),
-                                // Row(
-                                //   children: [
-                                    // Visibility(
-                                    //   visible: _dropdownValue != 'Never' ? true : false,
-                                    //   child: NumberPicker(
-                                    //     minValue: 1,
-                                    //     maxValue: 999,
-                                    //     value: _pickedEvery,
-                                    //     itemHeight: 24,
-                                    //     itemWidth: 80,
-                                    //     onChanged: (value) => setState(() => _pickedEvery = value),
-                                    //     selectedTextStyle: const TextStyle(
-                                    //         color: Colors.green,
-                                    //         fontSize: 20
-                                    //     ),
-                                    //   ),
-                                    // ),
-                                    // DropdownButton<String> (
-                                    //   dropdownColor: globals.appColorSub,
-                                    //   value: _dropdownValue,
-                                    //   onChanged: (String? newValue) {
-                                    //     setState(() {
-                                    //       _dropdownValue = newValue!;
-                                    //     });
-                                    //   },
-                                    //   items: const [
-                                    //     DropdownMenuItem(
-                                    //       value: 'Never',
-                                    //         child: Text('Never')
-                                    //     ),
-                                    //     DropdownMenuItem(
-                                    //         value: 'Everyday',
-                                    //         child: Text('day')
-                                    //     ),
-                                    //     DropdownMenuItem(
-                                    //         value: 'Everyweek',
-                                    //         child: Text('week')
-                                    //     ),
-                                    //     DropdownMenuItem(
-                                    //         value: 'Everyyear',
-                                    //         child: Text('year')
-                                    //     ),
-                                    //   ],
-                                    // )
-                                //   ],
-                                // )
-                              ],
-                            )
-                        )
-                      ],
-                    ),
-
-
-
-                    // TODO notifications works
-
-
-                    SizedBox(
-                      width: double.maxFinite,
-                      height: subTaskSizedBoxHeight,
-                      child: ListView.builder(
-                          itemCount: subTaskCount,
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 0.0),
-                              child: Row(
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                          ),
+                          Visibility(
+                              visible: alarmDateSettings,
+                              child: Column(
                                 children: [
-                                  Expanded(
-                                    child: TextFormField(
-                                      controller: widget.controllers[index],
-                                      // style: FontWeight.bold,
-                                      style: TextStyle(color: globals.appColorText),
-                                      decoration: InputDecoration(
-                                        border: const OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
+                                  const SizedBox(height: 25),
+                                  // Text(
+                                  //   alarmStartHour,
+                                  //   style: const TextStyle(
+                                  //       fontWeight: FontWeight.bold,
+                                  //       fontSize: 16
+                                  //   ),
+                                  // ),
+                                  // const SizedBox(height: 5),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Text(alarmHour, style: TextStyle(fontWeight: FontWeight.bold),),
+                                          NumberPicker(
+                                            minValue: 01,
+                                            maxValue: 24,
+                                            value: _pickedHour,
+                                            itemHeight: 24,
+                                            itemWidth: 80,
+                                            onChanged: (value) => setState(() => _pickedHour = value),
+                                            selectedTextStyle: const TextStyle(
+                                                color: Colors.green,
+                                                fontSize: 20
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Column(
+                                        children: [
+                                          Text(alarmMinute, style: const TextStyle(fontWeight: FontWeight.bold),),
+                                          NumberPicker(
+                                            minValue: 00,
+                                            maxValue: 59,
+                                            value: _pickedMinute,
+                                            itemHeight: 24,
+                                            itemWidth: 80,
+                                            onChanged: (value) => setState(() => _pickedMinute = value),
+                                            selectedTextStyle: const TextStyle(
+                                                color: Colors.green,
+                                                fontSize: 20
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  // TODO option how often to reminder - every: hour, day, week, month, year - at what hour
+                                  const SizedBox(height: 25),
+                                  Row(
+                                    children: [
+                                      Text(alarmRepeatEvery,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16
                                         ),
-                                        hintText: subtaskHintText,
-                                        // hintStyle: TextStyle(color: globals.appColorText)
-                                        hintStyle: TextStyle(
-                                            color: globals.appColorText,
-                                            fontWeight: FontWeight.w100
+                                      ),
+                                      const SizedBox(width: 10,),
+                                      Visibility(
+                                        visible: _dropdownValue != 'Nigdy' && _dropdownValue != 'Never' ? true : false, // TODO repair
+                                        child: NumberPicker(
+                                          minValue: 1,
+                                          maxValue: 999,
+                                          value: _pickedEvery,
+                                          itemHeight: 24,
+                                          itemWidth: 35,
+                                          onChanged: (value) => setState(() => _pickedEvery = value),
+                                          selectedTextStyle: const TextStyle(
+                                              color: Colors.green,
+                                              fontSize: 20
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10,),
+                                      DropdownButton<String> (
+                                        dropdownColor: globals.appColorSub,
+                                        value: _dropdownValue,
+                                        onChanged: (String? newValue) {
+                                          setState(() {
+                                            _dropdownValue = newValue!;
+                                          });
+                                        },
+                                        items: [
+                                          DropdownMenuItem(
+                                              value: 'Never',
+                                              child: Text(alarmNever)
+                                          ),
+                                          DropdownMenuItem(
+                                              value: 'Everyday',
+                                              child: Text(alarmDay)
+                                          ),
+                                          DropdownMenuItem(
+                                              value: 'Everyweek',
+                                              child: Text(alarmWeek)
+                                          ),
+                                          DropdownMenuItem(
+                                              value: 'Everyyear',
+                                              child: Text(alarmYear)
+                                          ),
+                                        ],
+                                      )
+                                    ]
+                                  ),
+                                  // Row(
+                                  //   children: [
+                                      // Visibility(
+                                      //   visible: _dropdownValue != 'Never' ? true : false,
+                                      //   child: NumberPicker(
+                                      //     minValue: 1,
+                                      //     maxValue: 999,
+                                      //     value: _pickedEvery,
+                                      //     itemHeight: 24,
+                                      //     itemWidth: 80,
+                                      //     onChanged: (value) => setState(() => _pickedEvery = value),
+                                      //     selectedTextStyle: const TextStyle(
+                                      //         color: Colors.green,
+                                      //         fontSize: 20
+                                      //     ),
+                                      //   ),
+                                      // ),
+                                      // DropdownButton<String> (
+                                      //   dropdownColor: globals.appColorSub,
+                                      //   value: _dropdownValue,
+                                      //   onChanged: (String? newValue) {
+                                      //     setState(() {
+                                      //       _dropdownValue = newValue!;
+                                      //     });
+                                      //   },
+                                      //   items: const [
+                                      //     DropdownMenuItem(
+                                      //       value: 'Never',
+                                      //         child: Text('Never')
+                                      //     ),
+                                      //     DropdownMenuItem(
+                                      //         value: 'Everyday',
+                                      //         child: Text('day')
+                                      //     ),
+                                      //     DropdownMenuItem(
+                                      //         value: 'Everyweek',
+                                      //         child: Text('week')
+                                      //     ),
+                                      //     DropdownMenuItem(
+                                      //         value: 'Everyyear',
+                                      //         child: Text('year')
+                                      //     ),
+                                      //   ],
+                                      // )
+                                  //   ],
+                                  // )
+                                ],
+                              )
+                          )
+                        ],
+                      ),
+        
+        
+        
+                      // TODO notifications works
+        
+        
+                      SizedBox(
+                        width: double.maxFinite,
+                        height: subTaskSizedBoxHeight,
+                        child: ListView.builder(
+                            itemCount: subTaskCount,
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 0.0),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextFormField(
+                                        controller: widget.controllers[index],
+                                        // style: FontWeight.bold,
+                                        style: TextStyle(color: globals.appColorText),
+                                        decoration: InputDecoration(
+                                          border: const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                          ),
+                                          hintText: subtaskHintText,
+                                          // hintStyle: TextStyle(color: globals.appColorText)
+                                          hintStyle: TextStyle(
+                                              color: globals.appColorText,
+                                              fontWeight: FontWeight.w100
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  IconButton(
-                                    onPressed: () => {
-                                      deleteSubtask(widget.parentIndex, index),
-                                    },
-                                    icon: Icon(
-                                      Icons.delete,
-                                      // color: Colors.grey[500],
-                                      color: globals.appColorDelete,
+                                    IconButton(
+                                      onPressed: () => {
+                                        deleteSubtask(widget.parentIndex, index),
+                                      },
+                                      icon: Icon(
+                                        Icons.delete,
+                                        // color: Colors.grey[500],
+                                        color: globals.appColorDelete,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }),
-                    ),
-                    // SubTaskTextForm(),
-                    Row(children: [
-                      IconButton(
-                          onPressed: addNewSubTask,
-                          icon: Icon(
-                            Icons.add_circle,
-                            // color: Colors.purple[200],
-                            // color: globals.appColorSub,
-                            color: globals.appColorCheckbox,
-                          )),
-                      Text(subtaskHintText, style: TextStyle(color: globals.appColorText),),
-                    ])
-                  ],
-                )),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                MyButton(
-                  name: buttonSaveName,
-                  onPressed: isButtonEnabled ? widget.onSave : null,
-                ),
-                const SizedBox(
-                  width: 8,
-                ),
-                MyButton(
-                  name: buttonCancelName,
-                  onPressed: widget.onCancel,
-                )
-              ],
-            ),
-          ],
+                                  ],
+                                ),
+                              );
+                            }),
+                      ),
+                      // SubTaskTextForm(),
+                      Row(children: [
+                        IconButton(
+                            onPressed: addNewSubTask,
+                            icon: Icon(
+                              Icons.add_circle,
+                              // color: Colors.purple[200],
+                              // color: globals.appColorSub,
+                              color: globals.appColorCheckbox,
+                            )),
+                        Text(subtaskHintText, style: TextStyle(color: globals.appColorText),),
+                      ])
+                    ],
+                  )),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  MyButton(
+                    name: buttonSaveName,
+                    onPressed: isButtonEnabled ? widget.onSave : null,
+                  ),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  MyButton(
+                    name: buttonCancelName,
+                    onPressed: widget.onCancel,
+                  )
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
