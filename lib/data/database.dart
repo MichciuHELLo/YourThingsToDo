@@ -11,10 +11,17 @@ class ToDoDataBase {
     1st parameter is String name of a task,
     2nd parameter is boolean if task is checked as completed,
     3rd parameter is boolean if subtasks have been open,
-    4th parameter is list of subtasks where:
+    4th parameter is list of SubTask where:
       1st parameter is String name of a task,
       2nd parameter is boolean if task is checked as completed
-    // TODO add 5th parameter to save alarm data
+    5th parameter is AlertData where:
+      1st parameter is int dayOfAlert
+      2nd parameter is int monthOfAlert
+      3rd parameter is int yearOfAlert
+      4th parameter is int hourOfAlert
+      5th parameter is int minuteOfAlert
+      6th parameter is int repeatEveryAlert
+      7th parameter is String *ENUM?* that tells how often repeat alert (Never/Everyday/Everyweek/Everyyear)
    */
 
   List<Task> toDoList = [];

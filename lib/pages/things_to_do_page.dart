@@ -42,10 +42,13 @@ class _ThingsToDoPageState extends State<ThingsToDoPage> {
     // }
     // db.toDoList.clear();
     // print("length: " + db.toDoList.length.toString());
-    // db.toDoList.add(Task("Błąd podczas edycji nazwy głównej taska. Valid index 0. Błąd się pojawia tylko gdy task ma subtask.", false, false, null, AlertData(1,1,1,1,1,1,'Never')));
-    // db.toDoList.add(Task("Poprawić widok dodawania taska. Widok jest brzydki i źle dopasowany do ekranu.", false, false, null, AlertData(1,1,1,1,1,1,'Never')));
+    // db.toDoList.add(Task("Błąd podczas edycji nazwy głównej taska. Valid index 0. Błąd się pojawia tylko gdy task ma subtask.", false, false, [], AlertData(1,1,1,1,1,1,'Never')));
+    // db.toDoList.add(Task("Poprawić widok dodawania taska. Widok jest brzydki i źle dopasowany do ekranu.", false, false, [], AlertData(1,1,1,1,1,1,'Never')));
     // db.toDoList.add(Task("Wprowadzić przypomienia zadania na podstawie dat.", false, false, [SubTask("Przychodzą powiadomienia", false)], AlertData(1,1,1,1,1,1,'Never')));
-    // db.toDoList.add(Task("Ustawić ikone aplikacji", false, false, null, AlertData(1,1,1,1,1,1,'Never')));
+    // db.toDoList.add(Task("Ustawić ikone aplikacji", false, false, [], AlertData(1,1,1,1,1,1,'Never')));
+    // db.toDoList.add(Task("Poprawić kolory aplikacji w innych niż fiolet", false, false, [], AlertData(1,1,1,1,1,1,'Never')));
+    // db.toDoList.add(Task("Gdy się usunie wszystkie subtaski wywala błąd", false, false, [], AlertData(1,1,1,1,1,1,'Never')));
+    // db.toDoList.add(Task("Data alarmu powinna być zczytywana z DB a jeśli brak to dzień dzisiejszy", false, false, [], AlertData(1,1,1,1,1,1,'Never')));
     // db.updateDataBase();
     // print("length: " + db.toDoList.length.toString());
     // for(int i=0; i<db.toDoList.length; i++) {
