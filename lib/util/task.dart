@@ -17,9 +17,13 @@ class Task extends HiveObject {
   @HiveField(3)
   List<SubTask>? subTasks;
 
+  // @HiveField(4)
+  // bool alertSet;
+
   @HiveField(4)
   AlertData alertData;
 
+  // Task(this.name, this.completed, this.opened, this.subTasks, this.alertSet, this.alertData);
   Task(this.name, this.completed, this.opened, this.subTasks, this.alertData);
 
   factory Task.fromJson(Map<dynamic, dynamic> json) {
@@ -29,6 +33,7 @@ class Task extends HiveObject {
       json['opened'] as bool,
       (json['subTasks'] as List<dynamic>?)?.map((e) =>
           SubTask.fromJson(e as Map<dynamic, dynamic>)).toList(),
+      // json['alertSet'] as bool,
       AlertData.fromJson(json['alertData'] as Map<dynamic, dynamic>)
     );
   }
@@ -39,6 +44,7 @@ class Task extends HiveObject {
       'completed': completed,
       'opened': opened,
       'subTasks': subTasks?.map((e) => e.toJson()).toList(),
+      // 'alertSet': alertSet,
       'alertData': alertData.toJson()
     };
   }
