@@ -9,6 +9,7 @@ import 'package:flutter/widgets.dart';
 import 'package:numberpicker/numberpicker.dart';
 
 import '../data/database.dart';
+import 'alert_data.dart';
 import 'delete_alert_dialog_box.dart';
 import 'my_button.dart';
 
@@ -26,12 +27,14 @@ class DialogBox extends StatefulWidget {
   bool advancedSettings;
   final Stream<bool> stream;
   final int parentIndex;
+  AlertData alertData;
 
   DialogBox({
     super.key,
     required this.hintText,
     required this.controller,
     required this.controllers,
+    required this.alertData,
     required this.onSave,
     required this.onCancel,
     required this.onDeleteSubtask,
@@ -103,7 +106,17 @@ class _DialogBoxState extends State<DialogBox> {
     }
     subTaskCount = countSubTask();
 
+    if (widget.alertData.yearOfAlert != 1) {
+      _pickedDay = widget.alertData.dayOfAlert;
+      _pickedMonth = widget.alertData.monthOfAlert;
+      _pickedYear = widget.alertData.yearOfAlert;
 
+      _pickedHour = widget.alertData.hourOfAlert;
+      _pickedMinute = widget.alertData.minuteOfAlert;
+
+      _dropdownValue = widget.alertData.repeatEveryWhatAlert;
+      _pickedEvery = widget.alertData.repeatEveryAlert;
+    }
 
     db.loadSettings();
     switch (db.settingsList[0]) {
@@ -113,7 +126,7 @@ class _DialogBoxState extends State<DialogBox> {
         subtaskHintText = "Add a SubTask";
         buttonSaveName = "Save";
         buttonCancelName = "Cancel";
-        alarmStartDate = 'Alarm start date';
+        alarmStartDate = 'Set alarm';
         alarmStartHour = 'Alarm start hour';
         alarmDay = 'Day';
         alarmWeek = 'Week';
@@ -130,7 +143,7 @@ class _DialogBoxState extends State<DialogBox> {
         subtaskHintText = "Dodaj podzadanie";
         buttonSaveName = "Zapisz";
         buttonCancelName = "Cofnij";
-        alarmStartDate = 'Data alarmu';
+        alarmStartDate = 'Włącz alarm';
         alarmStartHour = 'Godzina alarmu';
         alarmDay = 'Dzień';
         alarmWeek = 'Tydzień';
@@ -142,8 +155,6 @@ class _DialogBoxState extends State<DialogBox> {
         alarmRepeatEvery = 'Powtórz co: ';
         break;
     }
-
-
   }
 
   @override
@@ -202,11 +213,6 @@ class _DialogBoxState extends State<DialogBox> {
   }
 
   void alarmDateSettingsCheckBoxChanged() {
-
-    _pickedDay = DateTime.now().day;
-    _pickedMonth = DateTime.now().month;
-    _pickedYear = DateTime.now().year;
-
     setState(() {
       if (alarmDateSettings) {
         alarmDateSettings = !alarmDateSettings;
@@ -444,7 +450,10 @@ class _DialogBoxState extends State<DialogBox> {
                                         value: _pickedDay > DateTime(DateTime.now().year, _pickedMonth + 1, 0).day ? DateTime(DateTime.now().year, _pickedMonth + 1, 0).day : _pickedDay,
                                         itemHeight: 24,
                                         itemWidth: 80,
-                                        onChanged: (value) => setState(() => _pickedDay = value),
+                                        onChanged: (value) => setState(() {
+                                          _pickedDay = value;
+                                          widget.alertData.dayOfAlert = _pickedDay;
+                                        }),
                                         selectedTextStyle: const TextStyle(
                                             color: Colors.green,
                                             fontSize: 20
@@ -461,7 +470,10 @@ class _DialogBoxState extends State<DialogBox> {
                                         value: _pickedMonth,
                                         itemHeight: 24,
                                         itemWidth: 80,
-                                        onChanged: (value) => setState(() => _pickedMonth = value),
+                                        onChanged: (value) => setState(() {
+                                          _pickedMonth = value;
+                                          widget.alertData.monthOfAlert = _pickedMonth;
+                                        }),
                                         selectedTextStyle: const TextStyle(
                                             color: Colors.green,
                                             fontSize: 20
@@ -478,7 +490,10 @@ class _DialogBoxState extends State<DialogBox> {
                                         value: _pickedYear,
                                         itemHeight: 24,
                                         itemWidth: 80,
-                                        onChanged: (value) => setState(() => _pickedYear = value),
+                                        onChanged: (value) => setState(() {
+                                          _pickedYear = value;
+                                          widget.alertData.yearOfAlert = _pickedYear;
+                                        }),
                                         selectedTextStyle: const TextStyle(
                                             color: Colors.green,
                                             fontSize: 20
@@ -514,7 +529,10 @@ class _DialogBoxState extends State<DialogBox> {
                                             value: _pickedHour,
                                             itemHeight: 24,
                                             itemWidth: 80,
-                                            onChanged: (value) => setState(() => _pickedHour = value),
+                                            onChanged: (value) => setState(() {
+                                              _pickedHour = value;
+                                              widget.alertData.hourOfAlert = _pickedHour;
+                                            }),
                                             selectedTextStyle: const TextStyle(
                                                 color: Colors.green,
                                                 fontSize: 20
@@ -531,7 +549,10 @@ class _DialogBoxState extends State<DialogBox> {
                                             value: _pickedMinute,
                                             itemHeight: 24,
                                             itemWidth: 80,
-                                            onChanged: (value) => setState(() => _pickedMinute = value),
+                                            onChanged: (value) => setState(() {
+                                              _pickedMinute = value;
+                                              widget.alertData.minuteOfAlert = _pickedMinute;
+                                            }),
                                             selectedTextStyle: const TextStyle(
                                                 color: Colors.green,
                                                 fontSize: 20
@@ -560,7 +581,10 @@ class _DialogBoxState extends State<DialogBox> {
                                           value: _pickedEvery,
                                           itemHeight: 24,
                                           itemWidth: 35,
-                                          onChanged: (value) => setState(() => _pickedEvery = value),
+                                          onChanged: (value) => setState(() {
+                                            _pickedEvery = value;
+                                            widget.alertData.repeatEveryAlert = _pickedEvery;
+                                          }),
                                           selectedTextStyle: const TextStyle(
                                               color: Colors.green,
                                               fontSize: 20
@@ -574,6 +598,8 @@ class _DialogBoxState extends State<DialogBox> {
                                         onChanged: (String? newValue) {
                                           setState(() {
                                             _dropdownValue = newValue!;
+                                            widget.alertData.repeatEveryWhatAlert = _dropdownValue;
+                                            print('alertData save: ${widget.alertData.repeatEveryWhatAlert}');
                                           });
                                         },
                                         items: [

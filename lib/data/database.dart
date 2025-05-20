@@ -14,7 +14,8 @@ class ToDoDataBase {
     4th parameter is list of SubTask where:
       1st parameter is String name of a task,
       2nd parameter is boolean if task is checked as completed
-    5th parameter is AlertData where:
+    // 5th parameter is boolean if alarm was set
+    6th parameter is AlertData where:
       1st parameter is int dayOfAlert
       2nd parameter is int monthOfAlert
       3rd parameter is int yearOfAlert
@@ -41,7 +42,7 @@ class ToDoDataBase {
     print("loadData...");
     var rawData = _myBox.get('TODOLIST');
     print("loaded Data: " + rawData.toString());
-    // rawData = "loaded Data: [{name: mechanizm przypominania o wykonaniu 'Taskow', completed: false, opened: false, subTasks: [{name: Dodac w ustawieniach zaawansowanych taska, completed: false}, {name: Przychodza notyfikacje, completed: false}], alertData: {1, 1, 2024, 1, 1, 1, Never}}, {name: Dodac reklamy, completed: false, opened: false, subTasks: [], alertData: {1, 1, 2024, 1, 1, 1, Never}}, {name: Naprawic znikajacy pasek, completed: false, opened: true, subTasks: [{name: Build scheduled during frame., completed: false}], alertData: {1, 1, 2024, 1, 1, 1, Never}}, {name: test, completed: false, opened: false, subTasks: [], alertData: {1, 1, 2024, 1, 1, 1, Never}}]";
+
     if (rawData != null) {
       List<dynamic> rawList = rawData as List<dynamic>;
       toDoList = rawList.map((e) => Task.fromJson(Map<String, dynamic>.from(e))).toList();

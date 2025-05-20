@@ -27,6 +27,7 @@ class _ThingsToDoPageState extends State<ThingsToDoPage> {
   ToDoDataBase db = ToDoDataBase();
   final _controller = TextEditingController();
   List<TextEditingController> _controllers = [];
+  AlertData _alertData = new AlertData(1,1,1,1,1,1,'Never');
 
   late String taskHintText;
 
@@ -105,6 +106,7 @@ class _ThingsToDoPageState extends State<ThingsToDoPage> {
             hintText: taskHintText,
             controller: _controller,
             controllers: _controllers,
+            alertData: _alertData,
             onSave: saveNewTask,
             onCancel: cancelNewTask,
             onDeleteSubtask: deleteSubtask,
@@ -129,7 +131,9 @@ class _ThingsToDoPageState extends State<ThingsToDoPage> {
               }
             }
           }
-          db.toDoList.add(Task(_controller.text, false, false, subTaskList, AlertData(1,1,1,1,1,1,'Never')));
+          db.toDoList.add(Task(_controller.text, false, false, subTaskList, _alertData));
+          print("New task!");
+          print('${_controller.text}, false, false, $subTaskList, ${_alertData.dayOfAlert}.${_alertData.monthOfAlert}.${_alertData.yearOfAlert} | ${_alertData.hourOfAlert}:${_alertData.minuteOfAlert} | ${_alertData.repeatEveryAlert}-${_alertData.repeatEveryWhatAlert}');
         });
         Navigator.of(context).pop();
         _controller.clear();
@@ -145,6 +149,8 @@ class _ThingsToDoPageState extends State<ThingsToDoPage> {
     TextEditingController taskName =
         TextEditingController(text: db.toDoList[index].name);
 
+    print('EDIT CHECK: ${db.toDoList[index].name} - ${db.toDoList[index].alertData.dayOfAlert}.${db.toDoList[index].alertData.monthOfAlert}.${db.toDoList[index].alertData.yearOfAlert} | ${db.toDoList[index].alertData.hourOfAlert}:${db.toDoList[index].alertData.minuteOfAlert} | ${db.toDoList[index].alertData.repeatEveryAlert}-${db.toDoList[index].alertData.repeatEveryWhatAlert}');
+
     List<SubTask>? subTaskList = getSubTasks(taskName.text);
     bool advancedSettingsChecked = false;
     if (subTaskList!.isNotEmpty) {
@@ -157,6 +163,16 @@ class _ThingsToDoPageState extends State<ThingsToDoPage> {
       _controllers.add(subTaskName);
     }
 
+    AlertData alertData = AlertData(
+        db.toDoList[index].alertData.dayOfAlert,
+        db.toDoList[index].alertData.monthOfAlert,
+        db.toDoList[index].alertData.yearOfAlert,
+        db.toDoList[index].alertData.hourOfAlert,
+        db.toDoList[index].alertData.minuteOfAlert,
+        db.toDoList[index].alertData.repeatEveryAlert,
+        db.toDoList[index].alertData.repeatEveryWhatAlert
+    );
+
     showDialog(
         context: context,
         builder: (context) {
@@ -164,7 +180,8 @@ class _ThingsToDoPageState extends State<ThingsToDoPage> {
             hintText: "",
             controller: taskName,
             controllers: _controllers,
-            onSave: () => editOldTask(taskName, index, subTaskList),
+            alertData: alertData,
+            onSave: () => editOldTask(taskName, index, subTaskList, alertData),
             onCancel: cancelNewTask,
             onDeleteSubtask: deleteSubtask,
             advancedSettings: advancedSettingsChecked,
@@ -174,8 +191,9 @@ class _ThingsToDoPageState extends State<ThingsToDoPage> {
         });
   }
 
-  void editOldTask(
-      TextEditingController taskName, int index, List<SubTask> subTaskList) {
+  void editOldTask(TextEditingController taskName, int index, List<SubTask> subTaskList, AlertData alertData) {
+    print('new name: ${taskName.text}');
+    print('EDITing CHECK: ${db.toDoList[index].name} - ${alertData.dayOfAlert}.${alertData.monthOfAlert}.${alertData.yearOfAlert} | ${alertData.hourOfAlert}:${alertData.minuteOfAlert} | ${alertData.repeatEveryAlert}-${alertData.repeatEveryWhatAlert}');
     if (taskName.text.isNotEmpty) {
       bool taskExists = checkExistenceOfTask(taskName.text);
       if (!taskExists || taskName.text == db.toDoList[index].name) {
@@ -209,6 +227,18 @@ class _ThingsToDoPageState extends State<ThingsToDoPage> {
             }
             db.toDoList[index].subTasks = subTaskList;
           }
+
+          print("its now");
+          db.toDoList[index].alertData.dayOfAlert = alertData.dayOfAlert;
+          db.toDoList[index].alertData.monthOfAlert = alertData.monthOfAlert;
+          db.toDoList[index].alertData.yearOfAlert = alertData.yearOfAlert;
+          db.toDoList[index].alertData.hourOfAlert = alertData.hourOfAlert;
+          db.toDoList[index].alertData.minuteOfAlert = alertData.minuteOfAlert;
+          db.toDoList[index].alertData.repeatEveryAlert = alertData.repeatEveryAlert;
+          db.toDoList[index].alertData.repeatEveryWhatAlert = alertData.repeatEveryWhatAlert;
+
+          print('EDITed CHECK: ${db.toDoList[index].name} - ${db.toDoList[index].alertData.dayOfAlert}.${db.toDoList[index].alertData.monthOfAlert}.${db.toDoList[index].alertData.yearOfAlert} | ${db.toDoList[index].alertData.hourOfAlert}:${db.toDoList[index].alertData.minuteOfAlert} | ${db.toDoList[index].alertData.repeatEveryAlert}-${db.toDoList[index].alertData.repeatEveryWhatAlert}');
+
         });
         Navigator.of(context).pop();
         _controller.clear();
