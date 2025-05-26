@@ -14,15 +14,15 @@ class ToDoDataBase {
     4th parameter is list of SubTask where:
       1st parameter is String name of a task,
       2nd parameter is boolean if task is checked as completed
-    // 5th parameter is boolean if alarm was set
-    6th parameter is AlertData where:
-      1st parameter is int dayOfAlert
-      2nd parameter is int monthOfAlert
-      3rd parameter is int yearOfAlert
-      4th parameter is int hourOfAlert
-      5th parameter is int minuteOfAlert
-      6th parameter is int repeatEveryAlert
-      7th parameter is String *ENUM?* that tells how often repeat alert (Never/Everyday/Everyweek/Everyyear)
+    5th parameter is AlertData where:
+      1th parameter is boolean if alarm was set
+      2st parameter is int dayOfAlert
+      3nd parameter is int monthOfAlert
+      4rd parameter is int yearOfAlert
+      5th parameter is int hourOfAlert
+      6th parameter is int minuteOfAlert
+      7th parameter is int repeatEveryAlert
+      8th parameter is String *ENUM?* that tells how often repeat alert (Never/Everyday/Everyweek/Everyyear)
    */
 
   List<Task> toDoList = [];
@@ -30,7 +30,7 @@ class ToDoDataBase {
   void createInitialData() {
     print("createInitialData...");
     toDoList = [
-      Task("Add new Things To Do!", false, false, [SubTask("And maybe some more :D", false), SubTask("Have fun <3", true)], AlertData(1,1,1,1,1,1,'Never'))
+      Task("Add new Things To Do!", false, false, [SubTask("And maybe some more :D", false), SubTask("Have fun <3", true)], AlertData(false, 1,1,1,1,1,1,'Never'))
     ];
 
     // settingsList = ["English", "Dark"];

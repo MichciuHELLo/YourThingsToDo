@@ -2,31 +2,36 @@ import 'package:hive/hive.dart';
 
 @HiveType(typeId: 2, adapterName: "AlertDataAdapter")
 class AlertData extends HiveObject {
+
   @HiveField(0)
-  int dayOfAlert;
+  bool isAlarmSet;
 
   @HiveField(1)
-  int monthOfAlert;
+  int dayOfAlert;
 
   @HiveField(2)
-  int yearOfAlert;
+  int monthOfAlert;
 
   @HiveField(3)
-  int hourOfAlert;
+  int yearOfAlert;
 
   @HiveField(4)
-  int minuteOfAlert;
+  int hourOfAlert;
 
   @HiveField(5)
-  int repeatEveryAlert;
+  int minuteOfAlert;
 
   @HiveField(6)
+  int repeatEveryAlert;
+
+  @HiveField(7)
   String repeatEveryWhatAlert;
 
-  AlertData(this.dayOfAlert, this.monthOfAlert, this.yearOfAlert, this.hourOfAlert, this.minuteOfAlert, this.repeatEveryAlert, this.repeatEveryWhatAlert);
+  AlertData(this.isAlarmSet, this.dayOfAlert, this.monthOfAlert, this.yearOfAlert, this.hourOfAlert, this.minuteOfAlert, this.repeatEveryAlert, this.repeatEveryWhatAlert);
 
   factory AlertData.fromJson(Map<dynamic, dynamic> json) {
     return AlertData(
+      json['isAlarmSet'] as bool,
       json['dayOfAlert'] as int,
       json['monthOfAlert'] as int,
       json['yearOfAlert'] as int,
@@ -39,6 +44,7 @@ class AlertData extends HiveObject {
 
   Map<String, dynamic> toJson() {
     return {
+      'isAlarmSet': isAlarmSet,
       'dayOfAlert': dayOfAlert,
       'monthOfAlert': monthOfAlert,
       'yearOfAlert': yearOfAlert,

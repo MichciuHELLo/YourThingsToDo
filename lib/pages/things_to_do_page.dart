@@ -27,7 +27,7 @@ class _ThingsToDoPageState extends State<ThingsToDoPage> {
   ToDoDataBase db = ToDoDataBase();
   final _controller = TextEditingController();
   List<TextEditingController> _controllers = [];
-  AlertData _alertData = new AlertData(1,1,1,1,1,1,'Never');
+  AlertData _alertData = AlertData(false, DateTime.now().day, DateTime.now().month, DateTime.now().year, DateTime.now().hour, DateTime.now().minute, 1, 'Never');
 
   late String taskHintText;
 
@@ -62,7 +62,7 @@ class _ThingsToDoPageState extends State<ThingsToDoPage> {
     if (_myBox.get("TODOLIST") == null) {
       db.createInitialData();
     }
-    db.loadData();
+    db.loadData();              // TODO should it be in aboves if?
     if (db.toDoList.isEmpty) { //  TODO check if it works - remove all tasks and restart an app
       db.createInitialData();
     }
@@ -133,7 +133,7 @@ class _ThingsToDoPageState extends State<ThingsToDoPage> {
           }
           db.toDoList.add(Task(_controller.text, false, false, subTaskList, _alertData));
           print("New task!");
-          print('${_controller.text}, false, false, $subTaskList, ${_alertData.dayOfAlert}.${_alertData.monthOfAlert}.${_alertData.yearOfAlert} | ${_alertData.hourOfAlert}:${_alertData.minuteOfAlert} | ${_alertData.repeatEveryAlert}-${_alertData.repeatEveryWhatAlert}');
+          print('${_controller.text}, false, false, $subTaskList, ${_alertData.isAlarmSet} - ${_alertData.dayOfAlert}.${_alertData.monthOfAlert}.${_alertData.yearOfAlert} | ${_alertData.hourOfAlert}:${_alertData.minuteOfAlert} | ${_alertData.repeatEveryAlert}-${_alertData.repeatEveryWhatAlert}');
         });
         Navigator.of(context).pop();
         _controller.clear();
@@ -143,6 +143,7 @@ class _ThingsToDoPageState extends State<ThingsToDoPage> {
         streamController.add(taskExists);
       }
     }
+    _alertData = AlertData(false, DateTime.now().day, DateTime.now().month, DateTime.now().year, DateTime.now().hour, DateTime.now().minute, 1, 'Never');
   }
 
   void editFunction(int index) {
@@ -152,9 +153,16 @@ class _ThingsToDoPageState extends State<ThingsToDoPage> {
     print('EDIT CHECK: ${db.toDoList[index].name} - ${db.toDoList[index].alertData.dayOfAlert}.${db.toDoList[index].alertData.monthOfAlert}.${db.toDoList[index].alertData.yearOfAlert} | ${db.toDoList[index].alertData.hourOfAlert}:${db.toDoList[index].alertData.minuteOfAlert} | ${db.toDoList[index].alertData.repeatEveryAlert}-${db.toDoList[index].alertData.repeatEveryWhatAlert}');
 
     List<SubTask>? subTaskList = getSubTasks(taskName.text);
+
     bool advancedSettingsChecked = false;
     if (subTaskList!.isNotEmpty) {
       advancedSettingsChecked = true;
+    }
+
+    bool alarmSetChecked = false;
+    if (db.toDoList[index].alertData.isAlarmSet == true) {
+      advancedSettingsChecked = true;
+      alarmSetChecked = true;
     }
 
     for (var subTask in subTaskList) {
@@ -164,6 +172,7 @@ class _ThingsToDoPageState extends State<ThingsToDoPage> {
     }
 
     AlertData alertData = AlertData(
+        db.toDoList[index].alertData.isAlarmSet,
         db.toDoList[index].alertData.dayOfAlert,
         db.toDoList[index].alertData.monthOfAlert,
         db.toDoList[index].alertData.yearOfAlert,
@@ -228,7 +237,7 @@ class _ThingsToDoPageState extends State<ThingsToDoPage> {
             db.toDoList[index].subTasks = subTaskList;
           }
 
-          print("its now");
+          db.toDoList[index].alertData.isAlarmSet = alertData.isAlarmSet;
           db.toDoList[index].alertData.dayOfAlert = alertData.dayOfAlert;
           db.toDoList[index].alertData.monthOfAlert = alertData.monthOfAlert;
           db.toDoList[index].alertData.yearOfAlert = alertData.yearOfAlert;
@@ -237,7 +246,7 @@ class _ThingsToDoPageState extends State<ThingsToDoPage> {
           db.toDoList[index].alertData.repeatEveryAlert = alertData.repeatEveryAlert;
           db.toDoList[index].alertData.repeatEveryWhatAlert = alertData.repeatEveryWhatAlert;
 
-          print('EDITed CHECK: ${db.toDoList[index].name} - ${db.toDoList[index].alertData.dayOfAlert}.${db.toDoList[index].alertData.monthOfAlert}.${db.toDoList[index].alertData.yearOfAlert} | ${db.toDoList[index].alertData.hourOfAlert}:${db.toDoList[index].alertData.minuteOfAlert} | ${db.toDoList[index].alertData.repeatEveryAlert}-${db.toDoList[index].alertData.repeatEveryWhatAlert}');
+          print('EDITed CHECK: ${db.toDoList[index].name} - ${db.toDoList[index].alertData.isAlarmSet} ${db.toDoList[index].alertData.dayOfAlert}.${db.toDoList[index].alertData.monthOfAlert}.${db.toDoList[index].alertData.yearOfAlert} | ${db.toDoList[index].alertData.hourOfAlert}:${db.toDoList[index].alertData.minuteOfAlert} | ${db.toDoList[index].alertData.repeatEveryAlert}-${db.toDoList[index].alertData.repeatEveryWhatAlert}');
 
         });
         Navigator.of(context).pop();
@@ -266,6 +275,7 @@ class _ThingsToDoPageState extends State<ThingsToDoPage> {
   void cancelNewTask() {
     Navigator.of(context).pop();
     _controller.clear();
+    _alertData = AlertData(false, DateTime.now().day, DateTime.now().month, DateTime.now().year, DateTime.now().hour, DateTime.now().minute, 1, 'Never');
   }
 
   void checkBoxChanged(bool? value, int index) {
