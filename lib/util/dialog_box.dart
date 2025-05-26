@@ -52,7 +52,6 @@ class _DialogBoxState extends State<DialogBox> {
   bool isButtonEnabled = false;
   bool taskExists = false;
   bool advancedSettings = false;
-  bool alarmDateSettings = false;
   bool alarmHourSettings = false;
   int subTaskCount = 0;
   double mainSizedBoxHeight = 200;
@@ -77,12 +76,14 @@ class _DialogBoxState extends State<DialogBox> {
   late String alarmNever;
   late String alarmRepeatEvery;
 
-  int _pickedDay = DateTime.now().day;
-  int _pickedMonth = DateTime.now().month;
-  int _pickedYear = DateTime.now().year;
+  late bool _alarmDateSettings;
 
-  int _pickedHour = DateTime.now().hour;
-  int _pickedMinute = DateTime.now().minute;
+  int _pickedDay = 1;
+  int _pickedMonth = 1;
+  int _pickedYear = 1;
+
+  int _pickedHour = 1;
+  int _pickedMinute = 1;
 
   String _dropdownValue = 'Never';
   int _pickedEvery = 1;
@@ -106,7 +107,7 @@ class _DialogBoxState extends State<DialogBox> {
     }
     subTaskCount = countSubTask();
 
-    if (widget.alertData.yearOfAlert != 1) {
+    _alarmDateSettings = widget.alertData.isAlarmSet;
       _pickedDay = widget.alertData.dayOfAlert;
       _pickedMonth = widget.alertData.monthOfAlert;
       _pickedYear = widget.alertData.yearOfAlert;
@@ -116,6 +117,10 @@ class _DialogBoxState extends State<DialogBox> {
 
       _dropdownValue = widget.alertData.repeatEveryWhatAlert;
       _pickedEvery = widget.alertData.repeatEveryAlert;
+
+    if (_alarmDateSettings) {
+      _alarmDateSettings = !_alarmDateSettings;
+      _alarmDateSettingsCheckBoxChanged();
     }
 
     db.loadSettings();
@@ -203,34 +208,18 @@ class _DialogBoxState extends State<DialogBox> {
       } else {
         mainSizedBoxHeight = 200;
       }
-      if (alarmDateSettings) {
-        mainSizedBoxHeight += 302;
-      }
-      if (alarmDateSettings && !advancedSettings) {
-        mainSizedBoxHeight -= 302;
-      }
     });
   }
 
-  void alarmDateSettingsCheckBoxChanged() {
+  void _alarmDateSettingsCheckBoxChanged() {
     setState(() {
-      if (alarmDateSettings) {
-        alarmDateSettings = !alarmDateSettings;
+      _alarmDateSettings = !_alarmDateSettings;
+      if (!_alarmDateSettings) {
         mainSizedBoxHeight -= 302;
       } else {
-        alarmDateSettings = !alarmDateSettings;
         mainSizedBoxHeight += 302;
       }
-    });
-  }
-
-  void alarmHourSettingsCheckBoxChanged() { // TODO delete - no usage
-
-    _pickedHour = DateTime.now().hour;
-    _pickedMinute = DateTime.now().minute;
-
-    setState(() {
-      alarmHourSettings = !alarmHourSettings;
+      widget.alertData.isAlarmSet = _alarmDateSettings;
     });
   }
 
@@ -244,10 +233,10 @@ class _DialogBoxState extends State<DialogBox> {
       }
 
       mainSizedBoxHeight += newSubtaskMenuHeight;
-      if (mainSizedBoxHeight > 500 && !alarmDateSettings) {
+      if (mainSizedBoxHeight > 500 && !_alarmDateSettings) {
         mainSizedBoxHeight = 500;
       }
-      if (mainSizedBoxHeight > 820 && alarmDateSettings) {
+      if (mainSizedBoxHeight > 820 && _alarmDateSettings) {
         mainSizedBoxHeight = 820;
       }
     });
@@ -265,10 +254,10 @@ class _DialogBoxState extends State<DialogBox> {
       }
 
       mainSizedBoxHeight += subTaskTextFormHeight;
-      if (mainSizedBoxHeight > 500 && !alarmDateSettings) {
+      if (mainSizedBoxHeight > 500 && !_alarmDateSettings) {
         mainSizedBoxHeight = 500;
       }
-      if (mainSizedBoxHeight > 820 && alarmDateSettings) {
+      if (mainSizedBoxHeight > 820 && _alarmDateSettings) {
         mainSizedBoxHeight = 820;
       }
     });
@@ -429,15 +418,15 @@ class _DialogBoxState extends State<DialogBox> {
                             style: const TextStyle(fontWeight: FontWeight.bold)
                           ),
                           Checkbox(
-                              value: alarmDateSettings,
-                              onChanged: (value) => alarmDateSettingsCheckBoxChanged()
+                              value: _alarmDateSettings,
+                              onChanged: (value) => _alarmDateSettingsCheckBoxChanged()
                           ),
                         ],
                       ),
                       Column(
                         children: [
                           Visibility(
-                              visible: alarmDateSettings,
+                              visible: _alarmDateSettings,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -505,7 +494,7 @@ class _DialogBoxState extends State<DialogBox> {
                               ),
                           ),
                           Visibility(
-                              visible: alarmDateSettings,
+                              visible: _alarmDateSettings,
                               child: Column(
                                 children: [
                                   const SizedBox(height: 25),
