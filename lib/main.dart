@@ -6,6 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive/hive.dart';
 import 'package:your_things_to_do/data/subTask.g.dart';
 import 'package:your_things_to_do/pages/navigate_page.dart';
+import 'package:your_things_to_do/service/noti_service.dart';
 import 'package:your_things_to_do/todelete/counter_page.dart';
 import 'package:your_things_to_do/todelete/first_page.dart';
 import 'package:your_things_to_do/todelete/home_page.dart';
@@ -19,6 +20,9 @@ void main() async {
 
   // ORIENTATION OPTIONS
   WidgetsFlutterBinding.ensureInitialized();
+
+  NotiService().initNotification();
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown

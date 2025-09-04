@@ -8,6 +8,7 @@ import 'package:your_things_to_do/util/task.dart';
 import 'package:your_things_to_do/util/todo_tile.dart';
 
 import '../data/globalVariables.dart' as globals;
+import '../service/noti_service.dart';
 import '../util/subTask.dart';
 
 class ThingsToDoPage extends StatefulWidget {
@@ -99,6 +100,12 @@ class _ThingsToDoPageState extends State<ThingsToDoPage> {
   }
 
   void createNewTask() {
+
+    // NotiService().showNotification(
+    //   title: "Tytul",
+    //   body: "cialo",
+    // );
+
     showDialog(
         context: context,
         builder: (context) {
@@ -358,7 +365,14 @@ class _ThingsToDoPageState extends State<ThingsToDoPage> {
       floatingActionButton: FloatingActionButton.small(
           // backgroundColor: Colors.purple,
           backgroundColor: globals.appColorMain,
-          onPressed: createNewTask,
+          // onPressed: createNewTask,
+          onPressed: () {
+            print('guzik klikniety');
+            NotiService().showNotification(
+              title: "tytul",
+              body: "body",
+            );
+          },
           child: Icon(
             Icons.add,
             // color: Colors.black,
